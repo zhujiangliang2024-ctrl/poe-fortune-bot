@@ -1,0 +1,15 @@
+{
+  "name": "poe-fortune-bot",
+  "version": "1.0.0",
+  "description": "POE Fortune Discord Bot with welcome messages and auto-replies",
+  "main": "poe-fortune-bot.js",
+  "scripts": {
+    "start": "node poe-fortune-bot.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
