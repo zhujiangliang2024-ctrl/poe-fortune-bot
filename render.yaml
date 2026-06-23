@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: poe-fortune-bot
+    env: node
+    buildCommand: npm install
+    startCommand: node poe-fortune-bot.js
+    envVars:
+      - key: DISCORD_TOKEN
+        value: "2dc5d65916cdc8986ebe6c3f27511c123e6a2d4c3869f164b7e7c5326ea80d7c"
