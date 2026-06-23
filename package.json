@@ -1,7 +1,7 @@
 {
   "name": "poe-fortune-bot",
-  "version": "1.0.0",
-  "description": "POE Fortune Discord Bot with welcome messages and auto-replies",
+  "version": "2.0.0",
+  "description": "POE Fortune Discord Bot - Path of Exile 2 Community Hub",
   "main": "poe-fortune-bot.js",
   "scripts": {
     "start": "node poe-fortune-bot.js"
@@ -11,5 +11,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "keywords": ["discord", "bot", "path-of-exile", "poe2", "gaming"],
+  "author": "POE Fortune",
+  "license": "MIT"
 }
