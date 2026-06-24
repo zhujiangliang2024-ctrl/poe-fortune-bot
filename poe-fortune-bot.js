@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, TextChannel, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 
 const TOKEN = process.env.DISCORD_TOKEN;
 const GUILD_ID = '1518803611792969738';
@@ -12,141 +12,219 @@ const client = new Client({
   ]
 });
 
-// ==================== MESSAGES ====================
+// ==================== DELTA FORCE TOOLS STYLE CONTENT ====================
+
+const HEADER_EMBED = new EmbedBuilder()
+  .setColor('#FF6B00')
+  .setTitle('🎮 POE Fortune - Path of Exile 2 Community')
+  .setURL('https://poefortune.gg')
+  .setDescription('The ultimate Path of Exile 2 community hub!')
+  .addFields(
+    { name: '📌 Navigation', value: 'Use the channels below to navigate our community' },
+    { name: '❓ Need Help?', value: 'DM an admin or post in #technical-help' }
+  )
+  .setFooter({ text: 'POE Fortune | Good luck, Exiles! 🏆' })
+  .setTimestamp();
+
+// ==================== CHANNEL STRUCTURE (Based on Delta Force Tools) ====================
+
+const CHANNEL_STRUCTURE = [
+  // Main Category - POE Fortune Hub
+  { category: '📌 POE Fortune', channels: [
+    { name: 'poe-fortune', desc: 'Main chat & community hub', type: 'text' },
+    { name: 'announcements', desc: 'Server news & updates', type: 'text' },
+    { name: 'fortune-rules', desc: 'Server rules & guidelines', type: 'text' },
+    { name: 'community', desc: 'Community announcements', type: 'text' }
+  ]},
+  
+  // News & Updates - Like DF Updates
+  { category: '📢 News & Updates', channels: [
+    { name: 'announcements', desc: 'Official announcements', type: 'text' },
+    { name: 'patch-notes', desc: 'Version updates & patch notes', type: 'text' },
+    { name: 'dev-news', desc: 'Developer news & dev streams', type: 'text' },
+    { name: 'league-info', desc: 'League start dates & info', type: 'text' }
+  ]},
+  
+  // Game Data - Like Weapon Builds, Auction House
+  { category: '⚔️ Game Data', channels: [
+    { name: 'class-builds', desc: 'Class builds & skill trees', type: 'text' },
+    { name: 'item-showcase', desc: 'Showcase your rare items', type: 'text' },
+    { name: 'crafting-guides', desc: 'Crafting tips & recipes', type: 'text' },
+    { name: 'price-check', desc: 'Item price inquiries', type: 'text' }
+  ]},
+  
+  // Trading - Like Auction House
+  { category: '💰 Trading', channels: [
+    { name: 'trade-requests', desc: 'Buy, sell, or trade items', type: 'text' },
+    { name: 'trade-logs', desc: 'Completed trade records', type: 'text' },
+    { name: 'price-check', desc: 'Check item values', type: 'text' },
+    { name: 'vendor-trades', desc: 'Vendor recipes & deals', type: 'text' }
+  ]},
+  
+  // Map & Routes - Like Map Meta
+  { category: '🗺️ Map & Routes', channels: [
+    { name: 'farming-routes', desc: 'Best farming routes', type: 'text' },
+    { name: 'atlas-strategy', desc: 'Atlas tree strategies', type: 'text' },
+    { name: 'delve-routes', desc: 'Delve mining routes', type: 'text' },
+    { name: 'heist-routes', desc: 'Heist league routes', type: 'text' }
+  ]},
+  
+  // Support - Like Give Feedback
+  { category: '🎯 Support', channels: [
+    { name: 'bugs-report', desc: 'Report in-game bugs', type: 'text' },
+    { name: 'technical-help', desc: 'Technical support & fixes', type: 'text' },
+    { name: 'feedback', desc: 'Give us your feedback', type: 'text' },
+    { name: 'suggestions', desc: 'Suggest new features', type: 'text' }
+  ]},
+  
+  // Social
+  { category: '💬 Social', channels: [
+    { name: 'general-chat', desc: 'General chat', type: 'text' },
+    { name: 'memes', desc: 'Memes & funny content', type: 'text' },
+    { name: 'lfg', desc: 'Looking for group', type: 'text' },
+    { name: 'achievements', desc: 'Show off achievements', type: 'text' }
+  ]},
+  
+  // Bot Commands
+  { category: '🤖 Bot', channels: [
+    { name: 'bot-commands', desc: 'Available bot commands', type: 'text' },
+    { name: 'bot-support', desc: 'Bot issues & help', type: 'text' }
+  ]}
+];
+
+// ==================== RULES (Delta Force Tools Style) ====================
+
+const RULES_EMBED = new EmbedBuilder()
+  .setColor('#FF6B00')
+  .setTitle('📋 POE Fortune - Server Rules')
+  .setURL('https://poefortune.gg/rules')
+  .setDescription('Please follow these rules to keep our community awesome!')
+  .addFields(
+    { name: '1️⃣ Be Respectful', value: 'Treat all members with respect. No harassment, hate speech, or personal attacks.' },
+    { name: '2️⃣ No Spam', value: "Don't spam messages, channels, or friend requests." },
+    { name: '3️⃣ No Unauthorized Advertising', value: 'No selling, trading, or promoting outside #trade-requests.' },
+    { name: '4️⃣ Keep Content Appropriate', value: 'All content must be PG-13. No NSFW or offensive material.' },
+    { name: '5️⃣ No Impersonation', value: "Don't pretend to be admins or other members." },
+    { name: '6️⃣ Help Others', value: 'Our community thrives when Exiles help each other!' },
+    { name: '7️⃣ Follow Discord ToS', value: 'All members must follow Discord Terms of Service.' }
+  )
+  .addField({ name: '⚠️ Violations', value: 'Breaking rules may result in: Warning → Mute → Kick → Ban', inline: true })
+  .setFooter({ text: 'Questions? DM an admin. Good luck, Exiles! ⚔️' })
+  .setTimestamp();
+
+// ==================== WELCOME MESSAGE ====================
 
 const WELCOME_DM = `
 🎮 Welcome to POE Fortune, Exile! 🎮
 
-We're excited to have you join our Path of Exile 2 community!
-
 ━━━━━━━━━━━━━━━━━━━━━━
+
+Thank you for joining our Path of Exile 2 community!
 
 📌 QUICK LINKS:
 • #poe-fortune — Main chat
-• #announcements — Server news
+• #announcements — News & updates
 • #class-builds — Build guides
-• #trade-requests — Trading post
+• #trade-requests — Trading
 • #bugs-report — Bug reports
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
 💬 GETTING STARTED:
-Introduce yourself in #poe-fortune! What class are you playing? Any questions? Just ask — our community is here to help!
+• Introduce yourself in #poe-fortune
+• Check out #class-builds for builds
+• Read #fortune-rules for server rules
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+❓ NEED HELP?
+Post in #technical-help or DM an admin!
 
 Good luck out there, Exile! 🏆
 `;
 
-const RULES_EMBED = new EmbedBuilder()
-  .setColor('#FF6B00')
-  .setTitle('📋 POE Fortune - Server Rules')
-  .setDescription('Welcome to POE Fortune! Please follow these rules to keep our community awesome.')
-  .addFields(
-    { name: '1️⃣ Be Respectful', value: 'Treat all members with respect. No harassment, hate speech, or personal attacks.' },
-    { name: '2️⃣ No Spam', value: "Don't spam messages or channels. Keep discussions relevant and meaningful." },
-    { name: '3️⃣ No Unauthorized Advertising', value: 'No selling, trading, or promoting outside designated channels.' },
-    { name: '4️⃣ Keep Content Appropriate', value: 'All content must be PG-13. No NSFW or offensive material.' },
-    { name: '5️⃣ Help Others', value: 'Our community thrives when Exiles help each other out!' },
-    { name: '6️⃣ Follow Discord ToS', value: 'All members must follow Discord\'s Terms of Service.' }
-  )
-  .setFooter({ text: 'Violations may result in warnings or bans. Good luck, Exiles! ⚔️' });
-
-const ANNOUNCEMENT_EMBED = new EmbedBuilder()
-  .setColor('#00FF88')
-  .setTitle('🎮 Welcome to POE Fortune!')
-  .setDescription('The ultimate Path of Exile 2 community hub!')
-  .addFields(
-    { name: '📌 Channel Overview', value: '• #poe-fortune — Main chat\n• #announcements — News\n• #class-builds — Build guides\n• #trade-requests — Trading\n• #bugs-report — Bug reports' },
-    { name: '💬 Getting Started', value: 'Introduce yourself! What class are you playing?' },
-    { name: '❓ Need Help?', value: 'Ask in #technical-help or DM an admin!' }
-  )
-  .setFooter({ text: 'Good luck, Exiles! 🏆' });
-
 // ==================== AUTO REPLIES ====================
 
 const AUTO_REPLIES = {
+  // Greetings
   'hello': 'Hey there, Exile! Welcome to POE Fortune! 🎮',
   'hi': 'Hey there, Exile! Welcome to POE Fortune! 🎮',
   'hey': 'Hey there, Exile! Welcome to POE Fortune! 🎮',
-  'help': 'Need help? Check out #technical-help or ask in #poe-fortune! ❓',
-  'build': 'Check out #class-builds for the latest build guides! 🔥',
-  'builds': 'Check out #class-builds for the latest build guides! 🔥',
-  'trade': 'Visit #trade-requests to post your trade requests! 💰',
-  'trading': 'Visit #trade-requests to trade with other Exiles! 💎',
-  'currency': 'Looking to trade? Head to #trade-requests! 💎',
-  'crafting': 'For crafting tips, check out our guides in #class-builds! ⚒️',
-  'league': 'Which league are you playing? Let us know in #general-chat! 🏆',
-  'patch': 'Check #patch-notes for the latest updates! 📜',
+  'what\'s up': 'Hey Exile! Need anything? 🎮',
+  
+  // Help
+  'help': 'Need help? Check #technical-help or ask in #poe-fortune! ❓',
+  'how do i': 'Check #class-builds or #new-player-guide for guides! 📚',
+  
+  // Builds
+  'build': 'Check out #class-builds for the latest builds! 🔥',
+  'builds': 'Check out #class-builds for the latest builds! 🔥',
+  'class': 'What class are you playing? Share in #class-builds! 🎭',
+  'skill tree': 'Check #class-builds for skill tree guides! 🌳',
+  
+  // Trading
+  'trade': 'Visit #trade-requests to trade with other Exiles! 💰',
+  'trading': 'Visit #trade-requests to trade with other Exiles! 💰',
+  'sell': 'Post in #trade-requests! 💎',
+  'buy': 'Check #trade-requests or post what you need! 💎',
+  'currency': 'Check #trade-requests for currency trading! 💎',
+  
+  // Crafting
+  'crafting': 'Check #crafting-guides for crafting tips! ⚒️',
+  'craft': 'Check #crafting-guides for crafting tips! ⚒️',
+  
+  // Maps
+  'map': 'Check #farming-routes for map guides! 🗺️',
+  'farming': 'Check #farming-routes for best farming spots! 🗺️',
+  'route': 'Check #farming-routes for routes! 🗺️',
+  
+  // Game Info
+  'league': 'Check #league-info for league dates! 🏆',
+  'patch': 'Check #patch-notes for the latest patches! 📜',
   'news': 'Check #announcements for the latest news! 📢',
+  'update': 'Check #patch-notes for updates! 📜',
+  
+  // Support
   'bug': 'Report bugs in #bugs-report! 🐛',
+  'error': 'Post in #technical-help with error details! 🔧',
+  'crash': 'Post in #technical-help with crash logs! 🔧',
+  
+  // Social
   '组队': 'Check out #lfg for group finding! 👥',
   'lfg': 'Check out #lfg for group finding! 👥',
-  'class': 'What class are you playing? Share in #class-builds! 🎭',
-  'merci': "You're welcome, Exile! Anytime! 👍",
+  'group': 'Check out #lfg to find groups! 👥',
+  
+  // Thanks
   'thanks': "You're welcome, Exile! Anytime! 👍",
-  'thank you': "You're welcome, Exile! Anytime! 👍"
+  'thank you': "You're welcome, Exile! Anytime! 👍",
+  'thx': "You're welcome, Exile! Anytime! 👍",
+  'merci': "You're welcome, Exile! Anytime! 👍"
 };
-
-// ==================== CHANNEL SETUP ====================
-
-const CHANNEL_STRUCTURE = [
-  { category: 'POE Fortune', channels: [
-    { name: 'poe-fortune', desc: 'Main chat & community hub', type: 'text' },
-    { name: 'announcements', desc: 'Server news & updates', type: 'text' },
-    { name: 'fortune-rules', desc: 'Server rules', type: 'text' }
-  ]},
-  { category: 'POE2 新闻', channels: [
-    { name: 'announcements', desc: 'Official announcements', type: 'text' },
-    { name: 'patch-notes', desc: 'Version updates', type: 'text' },
-    { name: 'dev-news', desc: 'Developer news', type: 'text' }
-  ]},
-  { category: 'POE2 入门', channels: [
-    { name: 'new-player-guide', desc: 'New player guide', type: 'text' },
-    { name: 'class-builds', desc: 'Class builds & guides', type: 'text' },
-    { name: 'farming-routes', desc: 'Farming routes', type: 'text' }
-  ]},
-  { category: 'POE2 交易', channels: [
-    { name: 'trade-requests', desc: 'Trade requests', type: 'text' },
-    { name: 'price-check', desc: 'Price inquiries', type: 'text' },
-    { name: 'trade-logs', desc: 'Trade records', type: 'text' }
-  ]},
-  { category: 'POE2 聊天', channels: [
-    { name: 'general-chat', desc: 'General chat', type: 'text' },
-    { name: 'memes', desc: 'Memes & fun', type: 'text' },
-    { name: 'lfg', desc: 'Looking for group', type: 'text' }
-  ]},
-  { category: 'POE2 技术支持', channels: [
-    { name: 'bugs-report', desc: 'Bug reports', type: 'text' },
-    { name: 'technical-help', desc: 'Technical support', type: 'text' }
-  ]},
-  { category: '机器人', channels: [
-    { name: 'bot-commands', desc: 'Bot commands', type: 'text' }
-  ]}
-];
 
 // ==================== FUNCTIONS ====================
 
 async function setupChannels() {
   const guild = await client.guilds.fetch(GUILD_ID);
-  console.log(`Setting up channels for: ${guild.name}`);
+  console.log(`\n🏠 Setting up channels for: ${guild.name}`);
 
   for (const cat of CHANNEL_STRUCTURE) {
-    // Skip if category already exists
-    const existingCat = guild.channels.cache.find(c => c.name === cat.category && c.type === 4);
-    let category;
-
-    if (!existingCat) {
+    // Check if category exists
+    let category = guild.channels.cache.find(c => c.name === cat.category && c.type === 4);
+    
+    if (!category) {
       category = await guild.channels.create({
         name: cat.category,
         type: 4
       });
-      console.log(`✅ Created category: ${cat.category}`);
+      console.log(`✅ Created: ${cat.category}`);
     } else {
-      category = existingCat;
-      console.log(`📁 Category exists: ${cat.category}`);
+      console.log(`📁 Exists: ${cat.category}`);
     }
 
     for (const ch of cat.channels) {
+      // Check if channel exists (by name)
       const existingChannel = guild.channels.cache.find(c => c.name === ch.name);
+      
       if (!existingChannel) {
         await guild.channels.create({
           name: ch.name,
@@ -154,9 +232,9 @@ async function setupChannels() {
           topic: ch.desc,
           parent: category.id
         });
-        console.log(`  ✅ Created channel: #${ch.name}`);
+        console.log(`  ✅ #${ch.name}`);
       } else {
-        console.log(`  📝 Channel exists: #${ch.name}`);
+        console.log(`  📝 #${ch.name} (exists)`);
       }
     }
   }
@@ -164,23 +242,40 @@ async function setupChannels() {
 
 async function postAnnouncements() {
   const guild = await client.guilds.fetch(GUILD_ID);
-  const announcementsChannel = guild.channels.cache.find(c => c.name === 'announcements');
-
-  if (announcementsChannel) {
-    await announcementsChannel.send({ embeds: [ANNOUNCEMENT_EMBED] });
-    console.log('✅ Posted announcement in #announcements');
+  
+  // Post welcome in main channel
+  const fortuneChannel = guild.channels.cache.find(c => c.name === 'poe-fortune');
+  if (fortuneChannel) {
+    await fortuneChannel.send({ embeds: [HEADER_EMBED] });
+    await fortuneChannel.send(WELCOME_DM);
+    console.log('\n✅ Posted welcome in #poe-fortune');
   }
-
+  
+  // Post rules in rules channel
   const rulesChannel = guild.channels.cache.find(c => c.name === 'fortune-rules');
   if (rulesChannel) {
     await rulesChannel.send({ embeds: [RULES_EMBED] });
     console.log('✅ Posted rules in #fortune-rules');
   }
-
-  const fortuneChannel = guild.channels.cache.find(c => c.name === 'poe-fortune');
-  if (fortuneChannel) {
-    await fortuneChannel.send(WELCOME_DM);
-    console.log('✅ Posted welcome in #poe-fortune');
+  
+  // Post info in announcements
+  const announcementsChannel = guild.channels.cache.find(c => c.name === 'announcements');
+  if (announcementsChannel) {
+    const infoEmbed = new EmbedBuilder()
+      .setColor('#00FF88')
+      .setTitle('📢 Welcome to POE Fortune!')
+      .setDescription('Your ultimate Path of Exile 2 community hub!')
+      .addFields(
+        { name: '📌 Navigation', value: 'Check out our channel categories below!' },
+        { name: '⚔️ Game Data', value: '#class-builds, #crafting-guides, #item-showcase' },
+        { name: '💰 Trading', value: '#trade-requests, #price-check' },
+        { name: '🗺️ Maps', value: '#farming-routes, #atlas-strategy' },
+        { name: '🎯 Support', value: '#bugs-report, #technical-help' }
+      )
+      .setFooter({ text: 'Good luck, Exiles! 🏆' })
+      .setTimestamp();
+    await announcementsChannel.send({ embeds: [infoEmbed] });
+    console.log('✅ Posted info in #announcements');
   }
 }
 
@@ -190,31 +285,29 @@ client.on('guildMemberAdd', async (member) => {
   if (member.guild.id === GUILD_ID) {
     try {
       await member.send(WELCOME_DM);
-      console.log(`✅ Sent welcome DM to ${member.user.username}`);
+      console.log(`✅ Welcome DM sent to: ${member.user.username}`);
     } catch (e) {
-      console.log(`Could not DM ${member.user.username}`);
+      console.log(`❌ Could not DM: ${member.user.username}`);
     }
   }
 });
 
 client.on('messageCreate', async (message) => {
-  // Ignore bots
   if (message.author.bot) return;
-
-  // Check if in POE Fortune related channels
+  
   const allowedChannels = [
-    'poe-fortune', 'announcements', 'general-chat',
-    'class-builds', 'trade-requests', 'technical-help'
+    'poe-fortune', 'general-chat', 'class-builds', 
+    'trade-requests', 'crafting-guides', 'technical-help'
   ];
-
+  
   if (!allowedChannels.includes(message.channel.name)) return;
 
   const content = message.content.toLowerCase();
-
+  
   for (const [keyword, reply] of Object.entries(AUTO_REPLIES)) {
     if (content.includes(keyword)) {
       await message.reply(reply);
-      console.log(`Auto-replied to "${keyword}" in #${message.channel.name}`);
+      console.log(`💬 Auto-reply: "${keyword}" in #${message.channel.name}`);
       break;
     }
   }
@@ -223,17 +316,16 @@ client.on('messageCreate', async (message) => {
 // ==================== STARTUP ====================
 
 client.on('ready', async () => {
-  console.log(`✅ Logged in as ${client.user.tag}`);
+  console.log(`\n✅ Logged in as: ${client.user.tag}`);
   console.log(`🏠 Server ID: ${GUILD_ID}`);
-
-  // Setup channels on first run
+  
   await setupChannels();
-
-  // Post announcements
   await postAnnouncements();
-
-  console.log('\n🎉 POE Fortune Bot is fully operational!');
-  console.log('📌 Auto-replies are active in all channels.');
+  
+  console.log('\n🎉 POE Fortune Bot - Fully Operational!');
+  console.log('📌 All channels configured');
+  console.log('📢 Announcements posted');
+  console.log('💬 Auto-replies enabled');
 });
 
 client.login(TOKEN);
