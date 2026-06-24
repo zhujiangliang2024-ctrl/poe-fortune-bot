@@ -1,0 +1,34 @@
+name: Deploy to Render
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          curl -X POST https://api.render.com/v1/services \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "poe-fortune-bot",
+              "ownerId": "'$OWNER_ID'",
+              "type": "web_service",
+              "region": "oregon",
+              "runtime": "node",
+              "buildCommand": "npm install",
+              "startCommand": "node poe-fortune-bot.js",
+              "repo": "https://github.com/zhujiangliang2024-ctrl/poe-fortune-bot",
+              "branch": "main",
+              "envVars": [
+                {
+                  "key": "DISCORD_TOKEN",
+                  "value": "'$DISCORD_TOKEN'"
+                }
+              ]
+            }'
+        env:
+          OWNER_ID: tea-d8t2m968bjmc73e7m510
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
