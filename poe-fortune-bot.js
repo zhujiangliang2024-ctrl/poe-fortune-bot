@@ -108,7 +108,7 @@ const RULES_EMBED = new EmbedBuilder()
     { name: '6️⃣ Help Others', value: 'Our community thrives when Exiles help each other!' },
     { name: '7️⃣ Follow Discord ToS', value: 'All members must follow Discord Terms of Service.' }
   )
-  .addField({ name: '⚠️ Violations', value: 'Breaking rules may result in: Warning → Mute → Kick → Ban', inline: true })
+  .addFields({ name: '⚠️ Violations', value: 'Breaking rules may result in: Warning → Mute → Kick → Ban', inline: true })
   .setFooter({ text: 'Questions? DM an admin. Good luck, Exiles! ⚔️' })
   .setTimestamp();
 
