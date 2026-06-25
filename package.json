@@ -4,7 +4,7 @@
   "description": "POE Fortune Discord Bot - Path of Exile 2 Community Hub",
   "main": "poe-fortune-bot.js",
   "scripts": {
-    "start": "node poe-fortune-bot.js"
+    "start": "node lol-fortune-bot.js"
   },
   "dependencies": {
     "discord.js": "^14.14.0"
@@ -12,7 +12,13 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": ["discord", "bot", "path-of-exile", "poe2", "gaming"],
+  "keywords": [
+    "discord",
+    "bot",
+    "path-of-exile",
+    "poe2",
+    "gaming"
+  ],
   "author": "POE Fortune",
   "license": "MIT"
 }
