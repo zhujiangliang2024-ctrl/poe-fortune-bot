@@ -9,6 +9,8 @@ jobs:
   run-bot:
     timeout-minutes: 360
     runs-on: ubuntu-latest
+    env:
+      DISCORD_TOKEN: \${{ secrets.DISCORD_TOKEN }}
     
     steps:
       - uses: actions/checkout@v4
