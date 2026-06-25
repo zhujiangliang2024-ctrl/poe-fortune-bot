@@ -3,12 +3,13 @@ name: Run Discord Bot 24/7
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/30 * * * *'  # Every 30 minutes to keep it alive
+    - cron: "0 */6 * * *"  # Every 6 hours restart
 
 jobs:
   run-bot:
+    timeout-minutes: 360
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    
     steps:
       - uses: actions/checkout@v4
       
@@ -19,9 +20,28 @@ jobs:
           
       - name: Install dependencies
         run: npm install
-      
-      - name: Run bot
-        env:
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-        run: node poe-fortune-bot.js
-        timeout-minutes: 20
+        
+      - name: Start bot in background
+        run: |
+          npm start &
+          echo $! > bot_pid.txt
+          
+      - name: Keep bot running
+        run: |
+          # Wait and send heartbeat every 5 minutes for up to 6 hours
+          for i in {1..72}; do
+            sleep 300
+            if kill -0 $(cat bot_pid.txt) 2>/dev/null; then
+              echo "Bot still running... ($(date))"
+            else
+              echo "Bot stopped!"
+              exit 1
+            fi
+          done
+          
+      - name: Cleanup
+        if: always()
+        run: |
+          if [ -f bot_pid.txt ]; then
+            kill $(cat bot_pid.txt) 2>/dev/null || true
+          fi
